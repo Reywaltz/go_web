@@ -4,18 +4,22 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/jackc/pgx/v4"
+	"github.com/jackc/pgx/v4/pgxpool"
 )
 
 type DB struct {
-	Session *pgx.Conn
+	pool *pgxpool.Pool
+}
+
+func (db *DB) Pool() *pgxpool.Pool {
+	return db.pool
 }
 
 func NewDb(cfg Cfg) (*DB, error) {
-	conn, err := pgx.Connect(context.Background(), cfg.ConnString)
+	conn, err := pgxpool.Connect(context.Background(), cfg.ConnString)
 	if err != nil {
 		return nil, fmt.Errorf("%w: Can't connect to db", err)
 	}
 	return &DB{
-		Session: conn}, nil
+		pool: conn}, nil
 }

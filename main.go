@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"github.com/Reywaltz/web_test/cmd/journal-api/handlers"
+	"github.com/Reywaltz/web_test/internal/repository/queries"
 	"github.com/Reywaltz/web_test/pkg/postgres"
 	"github.com/gin-gonic/gin"
 )
@@ -20,7 +21,13 @@ func main() {
 
 	fmt.Println(db)
 
+	stdres := queries.NewRepository(db)
+
+	handler := handlers.NewUserGroupHandler(stdres)
+
 	router := gin.Default()
-	router.GET("/", handlers.Mainhandler)
+
+	handler.Route(router)
+
 	router.Run()
 }

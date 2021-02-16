@@ -2,9 +2,10 @@ package queries
 
 import (
 	"context"
+	"fmt"
+	"log"
 
 	"github.com/Reywaltz/web_test/internal/studygroup"
-	"github.com/Reywaltz/web_test/pkg/postgres"
 )
 
 const (
@@ -13,11 +14,11 @@ const (
 	selectStudyGroupQuery  = `SELECT ` + selectStudyGroupFields + ` FROM study_group`
 )
 
-func AllGroups(db *postgres.DB) []studygroup.StudyGroup {
-	res, err := db.Session.Query(context.Background(),
-		selectStudyGroupQuery)
+func (q *Query) GetAll() ([]studygroup.StudyGroup, error) {
+	res, err := q.db.Pool().Query(context.Background(), selectStudyGroupQuery)
 	if err != nil {
-		return nil
+		log.Fatal("GetALL fatal", err)
+		return nil, fmt.Errorf("%w: no group data", err)
 	}
 
 	out := make([]studygroup.StudyGroup, 0)
@@ -26,9 +27,9 @@ func AllGroups(db *postgres.DB) []studygroup.StudyGroup {
 		err := res.Scan(&studentGroup.ID,
 			&studentGroup.Name)
 		if err != nil {
-			return nil
+			return nil, err
 		}
 		out = append(out, studentGroup)
 	}
-	return out
+	return out, nil
 }
