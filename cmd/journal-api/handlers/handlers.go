@@ -25,7 +25,7 @@ func (h *StudyGroupHandlers) Route(eng *gin.Engine) {
 
 	v1 := eng.Group("/studentgroup")
 	{
-		v1.POST("/qwerty", h.getAll)
+		v1.GET("/qwerty", h.getAll)
 	}
 }
 
