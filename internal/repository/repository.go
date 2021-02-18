@@ -4,4 +4,5 @@ import "github.com/Reywaltz/web_test/internal/studygroup"
 
 type Repository interface {
 	GetAll() ([]studygroup.StudyGroup, error)
+	Create(studygroup.StudyGroup) error
 }

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/Reywaltz/web_test/cmd/journal-api/handlers"
@@ -18,8 +17,6 @@ func main() {
 	if err != nil {
 		log.Fatal("Error")
 	}
-
-	fmt.Println(db)
 
 	stdres := queries.NewRepository(db)
 
