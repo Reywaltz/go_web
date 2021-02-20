@@ -22,9 +22,15 @@ func main() {
 
 	handler := handlers.NewUserGroupHandler(stdres)
 
+	stdhanlder := handlers.NewStudentHandler(stdres)
+
+	jourhandler := handlers.NewJournalHandler(stdres)
+
 	router := gin.Default()
 
 	handler.Route(router)
+	stdhanlder.Route(router)
+	jourhandler.Route(router)
 
 	router.Run()
 }

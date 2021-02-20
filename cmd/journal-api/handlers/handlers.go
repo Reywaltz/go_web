@@ -6,24 +6,16 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/Reywaltz/web_test/internal/repository"
 	"github.com/Reywaltz/web_test/internal/studygroup"
 	"github.com/gin-gonic/gin"
 )
 
-type Repository interface {
-	GetAll() ([]studygroup.StudyGroup, error)
-	GetOne(groupName string) (studygroup.StudyGroup, error)
-	Create(studygroup.StudyGroup) error
-	Delete(groupName string) error
-	Update(studyGroup studygroup.StudyGroup) error
-	GetGroupByID(groupID int) (studygroup.StudyGroup, error)
-}
-
 type StudyGroupHandlers struct {
-	studyGroupStorage Repository
+	studyGroupStorage repository.StudyGroupRepository
 }
 
-func NewUserGroupHandler(studygroupStorage Repository) *StudyGroupHandlers {
+func NewUserGroupHandler(studygroupStorage repository.StudyGroupRepository) *StudyGroupHandlers {
 	return &StudyGroupHandlers{
 		studyGroupStorage: studygroupStorage,
 	}
