@@ -1,8 +1,9 @@
 package repository
 
 import (
-	"github.com/Reywaltz/web_test/internal/student"
-	"github.com/Reywaltz/web_test/internal/studygroup"
+	"github.com/Reywaltz/web_test/internal/models/journal"
+	"github.com/Reywaltz/web_test/internal/models/student"
+	"github.com/Reywaltz/web_test/internal/models/studygroup"
 )
 
 type StudyGroupRepository interface {
@@ -24,4 +25,8 @@ type StudentRepository interface {
 }
 
 type JournalRepository interface {
+	Journal() ([]journal.JournalJoined, error)
+	GetRecordByGroup(groupName string) ([]journal.JournalJoined, error)
+	GetRecordByID(id int) ([]journal.JournalJoined, error)
+	UpdateRecord(newJournal journal.Journal) error
 }

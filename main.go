@@ -18,19 +18,19 @@ func main() {
 		log.Fatal("Error")
 	}
 
-	stdres := queries.NewRepository(db)
+	repo := queries.New(db)
 
-	handler := handlers.NewUserGroupHandler(stdres)
+	groupHandler := handlers.NewStudyGroupHandler(repo)
 
-	stdhanlder := handlers.NewStudentHandler(stdres)
+	studentHanlder := handlers.NewStudentHandler(repo)
 
-	jourhandler := handlers.NewJournalHandler(stdres)
+	journalHandler := handlers.NewJournalHandler(repo)
 
 	router := gin.Default()
 
-	handler.Route(router)
-	stdhanlder.Route(router)
-	jourhandler.Route(router)
+	groupHandler.Route(router)
+	studentHanlder.Route(router)
+	journalHandler.Route(router)
 
 	router.Run()
 }

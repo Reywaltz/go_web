@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/Reywaltz/web_test/internal/models/studygroup"
 	"github.com/Reywaltz/web_test/internal/repository"
-	"github.com/Reywaltz/web_test/internal/studygroup"
 	"github.com/gin-gonic/gin"
 )
 
@@ -15,7 +15,7 @@ type StudyGroupHandlers struct {
 	studyGroupStorage repository.StudyGroupRepository
 }
 
-func NewUserGroupHandler(studygroupStorage repository.StudyGroupRepository) *StudyGroupHandlers {
+func NewStudyGroupHandler(studygroupStorage repository.StudyGroupRepository) *StudyGroupHandlers {
 	return &StudyGroupHandlers{
 		studyGroupStorage: studygroupStorage,
 	}

@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/Reywaltz/web_test/internal/models/student"
 	"github.com/Reywaltz/web_test/internal/repository"
-	"github.com/Reywaltz/web_test/internal/student"
 	"github.com/gin-gonic/gin"
 )
 

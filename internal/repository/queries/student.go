@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/Reywaltz/web_test/internal/student"
+	"github.com/Reywaltz/web_test/internal/models/student"
 )
 
 const (
@@ -121,28 +121,3 @@ func (q *Query) UpdateStudent(student student.Student) error {
 	}
 	return nil
 }
-
-// func (q *Query) DeleteGroup(groupName string) error {
-// 	_, err := q.db.Pool().Exec(context.Background(), deleteStudentQuery, groupName)
-// 	if err != nil {
-// 		return fmt.Errorf("%w: no group data", err)
-// 	}
-// 	return nil
-// }
-
-// func (q *Query) Update(Student Student.Student) error {
-// 	_, err := q.db.Pool().Exec(context.Background(), updateStudentQuery, Student.Name, Student.ID)
-// 	if err != nil {
-// 		return fmt.Errorf("%w: no group data", err)
-// 	}
-// 	return nil
-// }
-
-// func (q *Query) GetGroupByID(groupID int) (Student.Student, error) {
-// 	var student Student.Student
-// 	err := q.db.Pool().QueryRow(context.Background(), selectStudentByIDQuery, groupID).Scan(&student.ID, &student.Name)
-// 	if err != nil {
-// 		return student, fmt.Errorf("%w: no group data", err)
-// 	}
-// 	return student, err
-// }

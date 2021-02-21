@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/Reywaltz/web_test/internal/studygroup"
+	"github.com/Reywaltz/web_test/internal/models/studygroup"
 )
 
 const (
