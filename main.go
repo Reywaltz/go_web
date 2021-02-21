@@ -11,7 +11,7 @@ import (
 
 func main() {
 
-	cfg := postgres.NewCfg("cfg")
+	cfg := postgres.NewCfg("cfg", "toml")
 
 	db, err := postgres.NewDb(cfg)
 	if err != nil {

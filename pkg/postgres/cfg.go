@@ -10,9 +10,9 @@ type Cfg struct {
 	ConnString string
 }
 
-func NewCfg(filename string) Cfg {
+func NewCfg(filename string, configType string) Cfg {
 	viper.SetConfigName(filename)
-	viper.SetConfigType("toml")
+	viper.SetConfigType(configType)
 	viper.AddConfigPath(".")
 
 	err := viper.ReadInConfig()

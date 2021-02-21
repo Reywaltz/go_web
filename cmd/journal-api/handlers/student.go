@@ -7,15 +7,23 @@ import (
 	"strconv"
 
 	"github.com/Reywaltz/web_test/internal/models/student"
-	"github.com/Reywaltz/web_test/internal/repository"
 	"github.com/gin-gonic/gin"
 )
 
-type StudentHandlers struct {
-	StudentStorage repository.StudentRepository
+type StudentRepository interface {
+	Students() ([]student.Student, error)
+	GetStudentByID(id int) (student.Student, error)
+	GetStudentsByGroup(groupName string) ([]student.StudentJoined, error)
+	CreateStudent(student student.Student) error
+	DeleteStudent(id int) error
+	UpdateStudent(student.Student) error
 }
 
-func NewStudentHandler(studentStorage repository.StudentRepository) *StudentHandlers {
+type StudentHandlers struct {
+	StudentStorage StudentRepository
+}
+
+func NewStudentHandler(studentStorage StudentRepository) *StudentHandlers {
 	return &StudentHandlers{
 		StudentStorage: studentStorage,
 	}
@@ -27,10 +35,10 @@ func (h *StudentHandlers) Route(eng *gin.Engine) {
 	{
 		v1.GET("group/:groupName", h.getByGroup)
 		v1.GET("", h.getAll)
-		v1.GET("id:id", h.getOne)
+		v1.GET("id/:id", h.getOne)
 		v1.POST("", h.Create)
-		v1.DELETE("id:id", h.Delete)
-		v1.PUT("id:id", h.Update)
+		v1.DELETE("id/:id", h.Delete)
+		v1.PUT("id/:id", h.Update)
 	}
 }
 
@@ -56,6 +64,7 @@ func (h *StudentHandlers) getOne(c *gin.Context) {
 		c.AbortWithStatusJSON(500, gin.H{"error": err})
 		return
 	}
+	log.Println(out)
 	c.JSON(http.StatusOK, out)
 }
 

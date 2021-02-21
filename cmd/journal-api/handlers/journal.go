@@ -6,15 +6,21 @@ import (
 	"strconv"
 
 	"github.com/Reywaltz/web_test/internal/models/journal"
-	"github.com/Reywaltz/web_test/internal/repository"
 	"github.com/gin-gonic/gin"
 )
 
-type JournalHandlers struct {
-	JournalStorage repository.JournalRepository
+type JournalRepository interface {
+	Journal() ([]journal.JournalJoined, error)
+	GetRecordByGroup(groupName string) ([]journal.JournalJoined, error)
+	GetRecordByID(id int) ([]journal.JournalJoined, error)
+	UpdateRecord(newJournal journal.Journal) error
 }
 
-func NewJournalHandler(journalStorage repository.JournalRepository) *JournalHandlers {
+type JournalHandlers struct {
+	JournalStorage JournalRepository
+}
+
+func NewJournalHandler(journalStorage JournalRepository) *JournalHandlers {
 	return &JournalHandlers{
 		JournalStorage: journalStorage,
 	}
@@ -80,7 +86,6 @@ func (h *JournalHandlers) updateMark(c *gin.Context) {
 
 	c.Bind(&newJournal)
 	if newJournal.MarkID == 0 || newJournal.ID == 0 {
-		log.Println(newJournal)
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "wrong json format"})
 		return
 	}
