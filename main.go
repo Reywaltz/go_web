@@ -38,10 +38,6 @@ func main() {
 		AllowAllOrigins: true,
 	}))
 
-	router.StaticFS("journal/main/static", http.Dir("./web_test/static"))
-
-	router.LoadHTMLFiles("web_test/index.html")
-
 	groupHandler.Route(router)
 	studentHanlder.Route(router)
 	journalHandler.Route(router)
