@@ -88,13 +88,21 @@ func (h *JournalHandlers) updateMark(c *gin.Context) {
 
 	newJournal.ID = id
 
-	c.Bind(&newJournal)
+	if err = c.Bind(&newJournal); err != nil {
+		log.Println("error in bind", err)
+
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err})
+
+		return
+	}
+
 	if newJournal.MarkID == 0 || newJournal.ID == 0 {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "wrong json format"})
 
 		return
 	}
 	err = h.JournalStorage.UpdateRecord(newJournal)
+
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, err)
 

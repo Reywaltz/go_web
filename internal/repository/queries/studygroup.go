@@ -40,7 +40,7 @@ func (q *Query) GetAll() ([]studygroup.StudyGroup, error) {
 		err = res.Scan(&studentGroup.ID,
 			&studentGroup.Name)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("%w: error in scan", err)
 		}
 
 		out = append(out, studentGroup)
@@ -98,5 +98,5 @@ func (q *Query) GetGroupByID(groupID int) (studygroup.StudyGroup, error) {
 		return studentgroup, fmt.Errorf("%w: error in select query", err)
 	}
 
-	return studentgroup, err
+	return studentgroup, nil
 }

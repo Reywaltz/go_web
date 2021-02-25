@@ -1,7 +1,7 @@
 package postgres
 
 import (
-	"log"
+	"fmt"
 
 	"github.com/spf13/viper"
 )
@@ -10,18 +10,19 @@ type Cfg struct {
 	ConnString string
 }
 
-func NewCfg(filename string, configType string) Cfg {
+func NewCfg(filename string, configType string) (Cfg, error) {
 	viper.SetConfigName(filename)
 	viper.SetConfigType(configType)
 	viper.AddConfigPath(".")
 
 	err := viper.ReadInConfig()
 	if err != nil {
-		log.Fatal("can't read", err)
+		return Cfg{}, fmt.Errorf("%w error in read", err)
 	}
 
 	cfg := Cfg{
 		viper.GetString("db.connstring"),
 	}
-	return cfg
+
+	return cfg, nil
 }

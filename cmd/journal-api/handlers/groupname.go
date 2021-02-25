@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"database/sql"
+	"errors"
 	"log"
 	"net/http"
 	"strconv"
@@ -64,7 +66,13 @@ func (h *StudyGroupHandlers) getGroup(c *gin.Context) {
 
 func (h *StudyGroupHandlers) createGroup(c *gin.Context) {
 	var newGroup studygroup.StudyGroup
-	c.Bind(&newGroup)
+	if err := c.Bind(&newGroup); err != nil {
+		log.Println("error in bind", err)
+
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err})
+
+		return
+	}
 
 	if newGroup.Name == "" {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "json format error"})
@@ -99,14 +107,15 @@ func (h *StudyGroupHandlers) updateGroup(c *gin.Context) {
 		return
 	}
 
-	tmp, err := h.studyGroupStorage.GetGroupByID(groupID)
+	_, err = h.studyGroupStorage.GetGroupByID(groupID)
 	if err != nil {
-		log.Println(err)
-	}
+		if errors.Is(err, sql.ErrNoRows) {
+			c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": "Group not found"})
 
-	// TODO Проверять ошибку, а не структуру
-	if tmp == (studygroup.StudyGroup{}) {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Group not found"})
+			return
+		}
+		log.Println("error during GetGroupByID request", err)
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err})
 
 		return
 	}
@@ -115,7 +124,13 @@ func (h *StudyGroupHandlers) updateGroup(c *gin.Context) {
 		ID:   groupID,
 		Name: "",
 	}
-	c.Bind(&newGroup)
+	if err = c.Bind(&newGroup); err != nil {
+		log.Println("error in bind", err)
+
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err})
+
+		return
+	}
 
 	if newGroup.Name == "" {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Group name not provided"})
@@ -125,7 +140,7 @@ func (h *StudyGroupHandlers) updateGroup(c *gin.Context) {
 
 	err = h.studyGroupStorage.Update(newGroup)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Smth wrong with db"})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err})
 	}
 
 	c.JSON(http.StatusAccepted, gin.H{"success": "updated"})

@@ -33,6 +33,7 @@ func (h *SubjectHandlers) subjects(c *gin.Context) {
 	out, err := h.SubjectStorage.GetSubjectAttestation()
 	if err != nil {
 		log.Println("can't get studygroup data in handler", err)
+
 		return
 	}
 	c.JSON(http.StatusOK, out)

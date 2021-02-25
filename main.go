@@ -12,10 +12,12 @@ import (
 )
 
 func main() {
+	cfg, err := postgres.NewCfg("cfg", "toml")
+	if err != nil {
+		log.Fatal("Can't read or fing cfg file", err)
+	}
 
-	cfg := postgres.NewCfg("cfg", "toml")
-
-	db, err := postgres.NewDb(cfg)
+	db, err := postgres.NewDB(cfg)
 	if err != nil {
 		log.Fatal("Can't establish conn to db", err)
 	}
@@ -45,5 +47,5 @@ func main() {
 	journalHandler.Route(router)
 	subjectHandler.Route(router)
 
-	router.Run()
+	log.Fatal(router.Run())
 }

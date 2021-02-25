@@ -63,7 +63,7 @@ func (q *Query) Students() ([]student.Student, error) {
 			&student.Surname, &student.Name,
 			&student.SecondName, &student.StudyGroupID)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("%w: error during scan", err)
 		}
 
 		out = append(out, student)
@@ -108,7 +108,7 @@ func (q *Query) GetStudentsByGroup(groupName string) ([]student.StudentJoined, e
 			&student.Surname, &student.Name,
 			&student.SecondName, &student.StudyGroup)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("%w: error during scan", err)
 		}
 
 		out = append(out, student)
