@@ -3,7 +3,6 @@ package queries
 import (
 	"context"
 	"fmt"
-	"log"
 
 	"github.com/Reywaltz/web_test/internal/models/journal"
 )
@@ -30,14 +29,14 @@ const (
 func (q *Query) Journal() ([]journal.JournalJoined, error) {
 	res, err := q.db.Pool().Query(context.Background(), selectJoinedJournalQuery)
 	if err != nil {
-		log.Fatal("GetALL fatal", err)
-		return nil, fmt.Errorf("%w: no Journal data", err)
+		return nil, fmt.Errorf("%w: error in select query", err)
 	}
 
 	out := make([]journal.JournalJoined, 0)
 	for res.Next() {
 		var journal journal.JournalJoined
-		err := res.Scan(&journal.ID,
+		err := res.Scan(
+			&journal.ID,
 			&journal.SubjectShortname,
 			&journal.InTime,
 			&journal.Count,
@@ -48,24 +47,26 @@ func (q *Query) Journal() ([]journal.JournalJoined, error) {
 			&journal.SecondName,
 			&journal.GroupName)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("%w: error in scan", err)
 		}
-		log.Println(journal)
+
 		out = append(out, journal)
 	}
+
 	return out, nil
 }
 
 func (q *Query) GetRecordByGroup(groupName string) ([]journal.JournalJoined, error) {
 	res, err := q.db.Pool().Query(context.Background(), selectJoinedJournalByGroupQuery, groupName)
 	if err != nil {
-		log.Fatal("GetbyGroupALL fatal", err)
-		return nil, fmt.Errorf("%w: no Journal data", err)
+		return nil, fmt.Errorf("%w: error in select query", err)
 	}
+
 	out := make([]journal.JournalJoined, 0)
 	for res.Next() {
 		var journal journal.JournalJoined
-		err := res.Scan(&journal.ID,
+		err := res.Scan(
+			&journal.ID,
 			&journal.SubjectShortname,
 			&journal.InTime,
 			&journal.Count,
@@ -76,23 +77,27 @@ func (q *Query) GetRecordByGroup(groupName string) ([]journal.JournalJoined, err
 			&journal.SecondName,
 			&journal.GroupName)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("%w: error in scan", err)
 		}
+
 		out = append(out, journal)
 	}
+
 	return out, nil
 }
 
 func (q *Query) GetRecordByID(id int) ([]journal.JournalJoined, error) {
 	res, err := q.db.Pool().Query(context.Background(), selectJoinedJournalByIDQuery, id)
 	if err != nil {
-		log.Fatal("GetbyGroupALL fatal", err)
-		return nil, fmt.Errorf("%w: no Journal data", err)
+		return nil, fmt.Errorf("%w: error in select query", err)
 	}
+
 	out := make([]journal.JournalJoined, 0)
 	for res.Next() {
 		var journal journal.JournalJoined
-		err := res.Scan(&journal.ID,
+
+		err := res.Scan(
+			&journal.ID,
 			&journal.SubjectShortname,
 			&journal.InTime,
 			&journal.Count,
@@ -103,19 +108,20 @@ func (q *Query) GetRecordByID(id int) ([]journal.JournalJoined, error) {
 			&journal.SecondName,
 			&journal.GroupName)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("%w: error in scan", err)
 		}
+
 		out = append(out, journal)
 	}
+
 	return out, nil
 }
 
 func (q *Query) UpdateRecord(newJournal journal.Journal) error {
-	log.Println(newJournal.MarkID, newJournal.ID)
 	_, err := q.db.Pool().Exec(context.Background(), updateJournalMarkQuery, newJournal.MarkID, newJournal.ID)
 	if err != nil {
-		log.Println(err)
-		return err
+		return fmt.Errorf("%w: update error", err)
 	}
+
 	return nil
 }
