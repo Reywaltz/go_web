@@ -125,7 +125,7 @@ func (h *StudentHandlers) delete(c *gin.Context) {
 
 		return
 	}
-	c.JSON(http.StatusNoContent, gin.H{"status": "success"})
+	c.JSON(http.StatusOK, gin.H{"status": "success"})
 }
 
 func (h *StudentHandlers) update(c *gin.Context) {

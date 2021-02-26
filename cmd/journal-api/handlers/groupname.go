@@ -109,6 +109,7 @@ func (h *StudyGroupHandlers) updateGroup(c *gin.Context) {
 
 	_, err = h.studyGroupStorage.GetGroupByID(groupID)
 	if err != nil {
+		log.Println(err)
 		if errors.Is(err, sql.ErrNoRows) {
 			c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": "Group not found"})
 
