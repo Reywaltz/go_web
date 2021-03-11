@@ -1,0 +1,2 @@
+[db]
+connstring = "postgres://university:university@localhost:5432/university"
