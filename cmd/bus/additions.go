@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
+	"io/ioutil"
 	"net/http"
 	"strconv"
 	"time"
@@ -16,7 +16,7 @@ import (
 
 const (
 	brigade     = "22"
-	busName     = "dean"
+	busName     = "150"
 	initURL     = "https://up-lab1.mirea.ru/bus"
 	initCom     = "INIT_INSTANCE"
 	updateCom   = "UPDATE_SUBSCRIPTION"
@@ -83,6 +83,7 @@ func updateSubscription(jsonData []byte) error {
 	if resp.StatusCode != http.StatusOK {
 		return errBadStatusCode
 	}
+	fmt.Println(bytes.NewBuffer(jsonData))
 	fmt.Println("update request sent")
 	return nil
 }
@@ -125,18 +126,21 @@ func pushStudents(studentHandler *handlers.StudentHandlers) error {
 
 func fetchBus() error {
 	ticker := time.NewTicker(3 * time.Second)
+	defer ticker.Stop()
+
 	for range ticker.C {
-		timestamp := time.Now().UnixNano() / 1000000
-		resp, err := http.Get(fmt.Sprintf(getURL, brigade, strconv.FormatInt(timestamp, 10)))
+		resp, err := http.Get(fmt.Sprintf(getURL, busName, 1))
 		if err != nil {
-			return fmt.Errorf("%w can't get info", err)
+			return fmt.Errorf("%w: can't get info", err)
 		}
-		body, err := io.ReadAll(resp.Body)
+
+		body, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
-			return fmt.Errorf("%w can't read body", err)
+			return fmt.Errorf("%w: can't read body", err)
 		}
-		defer resp.Body.Close()
 		fmt.Println(string(body))
+		resp.Body.Close()
 	}
+
 	return nil
 }
