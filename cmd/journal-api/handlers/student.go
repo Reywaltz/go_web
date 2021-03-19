@@ -13,9 +13,11 @@ type StudentRepository interface {
 	Students() ([]student.Student, error)
 	GetStudentByID(id int) (student.Student, error)
 	GetStudentsByGroup(groupName string) ([]student.StudentJoined, error)
+	GetAllStudentsByGroup() ([]student.JoinedFullNameStudent, error)
 	CreateStudent(student student.Student) error
 	DeleteStudent(id int) error
 	UpdateStudent(student.Student) error
+	UpdateStudentGroup(updateStudentGroup student.UpdateStudentGroup) error
 	GetStudentsDebts() ([]student.StudentWithDebts, error)
 	GetStudentMarks() ([]student.StudentwithMarks, error)
 }
@@ -33,7 +35,9 @@ func NewStudentHandler(studentStorage StudentRepository) *StudentHandlers {
 func (h *StudentHandlers) Route(eng *gin.Engine) {
 	v1 := eng.Group("/student")
 	{
-		v1.GET("group/:groupName", h.getByGroup)
+		v1.GET("group", h.getAllStudentsByGroup)
+		v1.PUT("group", h.UpdateStudentGroup)
+		// v1.GET("group/:groupName", h.getByGroup)
 		v1.GET("mark", h.getmarks)
 		v1.GET("", h.getAll)
 		v1.GET("id/:id", h.getOne)
@@ -46,6 +50,16 @@ func (h *StudentHandlers) Route(eng *gin.Engine) {
 
 func (h *StudentHandlers) getAll(c *gin.Context) {
 	out, err := h.StudentStorage.Students()
+	if err != nil {
+		log.Println("can't get studygroup data in handler", err)
+
+		return
+	}
+	c.JSON(http.StatusOK, out)
+}
+
+func (h *StudentHandlers) getAllStudentsByGroup(c *gin.Context) {
+	out, err := h.StudentStorage.GetAllStudentsByGroup()
 	if err != nil {
 		log.Println("can't get studygroup data in handler", err)
 
@@ -182,4 +196,30 @@ func (h *StudentHandlers) getmarks(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, res)
+}
+
+func (h *StudentHandlers) UpdateStudentGroup(c *gin.Context) {
+	var updateStudentGroup student.UpdateStudentGroup
+
+	if err := c.Bind(&updateStudentGroup); err != nil {
+		log.Println("error in bind", err)
+
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err})
+
+		return
+	}
+
+	if updateStudentGroup.GroupID == 0 || updateStudentGroup.StudentID == 0 {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "json format error"})
+
+		return
+	}
+
+	err := h.StudentStorage.UpdateStudentGroup(updateStudentGroup)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err})
+
+		return
+	}
+	c.JSON(http.StatusCreated, gin.H{"status": "success"})
 }

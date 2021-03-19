@@ -35,3 +35,14 @@ type StudentwithMarks struct {
 	MarkFull   string `json:"mark_full"`
 	StudyGroup string `json:"study_group"`
 }
+
+type JoinedFullNameStudent struct {
+	ID         int    `json:"id"`
+	FullName   string `json:"fullname"`
+	StudyGroup string `json:"name"`
+}
+
+type UpdateStudentGroup struct {
+	StudentID int `json:"student_id"`
+	GroupID   int `json:"group_id"`
+}

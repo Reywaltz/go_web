@@ -42,12 +42,17 @@ const (
 	selectStudentByIDQuery = `SELECT ` + selectStudentFields +
 		` FROM student WHERE id = $1`
 
+	selectStudentsByGroup = `SELECT student.id as id, CONCAT(surname,' ',student.name,' ',second_name) as fullname, 
+	study_group.name FROM student INNER JOIN study_group ON study_group.id = student.study_group_id`
+
 	createStudentQuery = `INSERT INTO student (` + updateStudentFields + `)
 							 VALUES ($1, $2, $3, $4)`
 
 	deleteStudentQuery = `DELETE FROM student where id = $1`
 
 	updateStudentQuery = `UPDATE student SET surname=$1, name=$2, second_name=$3, study_group_id=$4 WHERE id = $5`
+
+	updateStudentGroupQuery = `UPDATE student SET study_group_id=$1 WHERE student.id=$2`
 )
 
 func (q *Query) Students() ([]student.Student, error) {
@@ -107,6 +112,27 @@ func (q *Query) GetStudentsByGroup(groupName string) ([]student.StudentJoined, e
 		err := res.Scan(&student.ID,
 			&student.Surname, &student.Name,
 			&student.SecondName, &student.StudyGroup)
+		if err != nil {
+			return nil, fmt.Errorf("%w: error during scan", err)
+		}
+
+		out = append(out, student)
+	}
+
+	return out, nil
+}
+
+func (q *Query) GetAllStudentsByGroup() ([]student.JoinedFullNameStudent, error) {
+	res, err := q.db.Pool().Query(context.Background(), selectStudentsByGroup)
+	if err != nil {
+		return nil, fmt.Errorf("%w: no student data", err)
+	}
+
+	out := make([]student.JoinedFullNameStudent, 0)
+	for res.Next() {
+		var student student.JoinedFullNameStudent
+		err := res.Scan(&student.ID,
+			&student.FullName, &student.StudyGroup)
 		if err != nil {
 			return nil, fmt.Errorf("%w: error during scan", err)
 		}
@@ -203,4 +229,15 @@ func (q *Query) GetStudentMarks() ([]student.StudentwithMarks, error) {
 	}
 
 	return out, nil
+}
+
+func (q *Query) UpdateStudentGroup(updateStudent student.UpdateStudentGroup) error {
+	_, err := q.db.Pool().Exec(context.Background(), updateStudentGroupQuery,
+		updateStudent.GroupID,
+		updateStudent.StudentID)
+	if err != nil {
+		return fmt.Errorf("%w: error in update", err)
+	}
+
+	return nil
 }

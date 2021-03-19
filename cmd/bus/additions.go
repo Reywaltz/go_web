@@ -54,6 +54,7 @@ func initPost(jsonData []byte) error {
 		return errBadStatusCode
 	}
 	fmt.Println("init request sent")
+	defer resp.Body.Close()
 	return nil
 }
 
@@ -83,13 +84,12 @@ func updateSubscription(jsonData []byte) error {
 	if resp.StatusCode != http.StatusOK {
 		return errBadStatusCode
 	}
-	fmt.Println(bytes.NewBuffer(jsonData))
+	defer resp.Body.Close()
 	fmt.Println("update request sent")
 	return nil
 }
 
 func pushStudents(studentHandler *handlers.StudentHandlers) error {
-
 	students, err := studentHandler.StudentStorage.Students()
 	if err != nil {
 		return fmt.Errorf("%w can't get students from db", err)
@@ -105,7 +105,6 @@ func pushStudents(studentHandler *handlers.StudentHandlers) error {
 			Subject: addRowCom,
 			Data:    &data,
 		}
-
 		jsonData, err := json.Marshal(newBus)
 		if err != nil {
 			return fmt.Errorf("%w: can't marshal json", err)
@@ -119,6 +118,7 @@ func pushStudents(studentHandler *handlers.StudentHandlers) error {
 		if resp.StatusCode != http.StatusOK {
 			return errBadStatusCode
 		}
+		defer resp.Body.Close()
 	}
 	fmt.Println("student pushed")
 	return nil
@@ -129,7 +129,7 @@ func fetchBus() error {
 	defer ticker.Stop()
 
 	for range ticker.C {
-		resp, err := http.Get(fmt.Sprintf(getURL, busName, 1))
+		resp, err := http.Get(fmt.Sprintf(getURL, busName, "1"))
 		if err != nil {
 			return fmt.Errorf("%w: can't get info", err)
 		}
